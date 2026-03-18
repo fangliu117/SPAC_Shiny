@@ -81,7 +81,7 @@ def ripleyL_server(input, output, session, shared):
 
             # Call template to get figure and dataframe in-memory
             figs_df: Tuple[Any, Any] = run_from_json(
-                json_path=params, save_results=False, show_plot=False
+                json_path=params, save_to_disk=False, show_plot=False
             )
             if figs_df is None:
                 return None
