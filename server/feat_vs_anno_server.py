@@ -48,6 +48,22 @@ def feat_vs_anno_server(input, output, session, shared):
         """Get the main AnnData object from shared state."""
         return shared['adata_main'].get()
 
+    @render.ui
+    def hm1_features_ui():
+        """Create dynamic feature multi-select from loaded data."""
+        adata = get_adata()
+        if adata is None:
+            return None
+
+        feature_choices = ["All"] + sorted(adata.var_names.tolist())
+        return ui.input_selectize(
+            "hm1_features",
+            "Feature(s)",
+            choices=feature_choices,
+            selected=["All"],
+            multiple=True
+        )
+
     @reactive.calc
     def get_layer():
         """
@@ -128,27 +144,34 @@ def feat_vs_anno_server(input, output, session, shared):
             virtual_path = register_memory_object(adata)
 
             params = {
+                # Core parameters
                 "Upstream_Analysis": virtual_path,
                 "Annotation": annotation,
                 "Table_to_Visualize": layer,
-                "Feature_s_": ["All"],
-                "Standard_Scale_": "None",
-                "Z_Score": "None",
+                "Feature_s_": list(input.hm1_features()) if input.hm1_features() else ["All"],
                 "Feature_Dendrogram": cluster_features,
                 "Annotation_Dendrogram": cluster_annotations,
-                "Figure_Title": "Hierarchical Heatmap",
-                "Figure_Width": 8,
-                "Figure_Height": 8,
-                "Figure_DPI": 300,
-                "Font_Size": 10,
-                "Matrix_Plot_Ratio": 0.8,
-                "Swap_Axes": False,
+
+                # Plot configuration — read from UI inputs
+                "Z_Score": input.hm1_z_score(),
+                "Standard_Scale_": input.hm1_standard_scale(),
+                "Swap_Axes": input.hm1_swap_axes(),
+                "Color_Map": cmap,
+                "Value_Min": vmin,
+                "Value_Max": vmax,
+
+                # Figure configuration — read from UI inputs
+                "Figure_Title": input.hm1_figure_title(),
+                "Figure_Width": input.hm1_figure_width(),
+                "Figure_Height": input.hm1_figure_height(),
+                "Figure_DPI": input.hm1_figure_dpi(),
+                "Font_Size": input.hm1_font_size(),
+                "Matrix_Plot_Ratio": input.hm1_matrix_ratio(),
+
+                # Dendrogram ratios — keep defaults
                 "Rotate_Label_": False,
                 "Horizontal_Dendrogram_Display_Ratio": 0.2,
                 "Vertical_Dendrogram_Display_Ratio": 0.2,
-                "Value_Min": vmin,
-                "Value_Max": vmax,
-                "Color_Map": cmap,
             }
 
             # Call template to get ClusterGrid and dataframe in-memory.
