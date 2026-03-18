@@ -102,7 +102,7 @@ def feat_vs_anno_ui():
                                             "RdYlBu", "Spectral", "PiYG",
                                             "PRGn", "seismic"
                                         ],
-                                        selected="viridis"
+                                        selected="seismic"
                                     ),
                                     ui.input_select(
                                         "hm1_z_score",
@@ -128,19 +128,19 @@ def feat_vs_anno_ui():
                                     ui.input_checkbox(
                                         "hm1_dendogram",
                                         "Include Dendrogram",
-                                        False
+                                        True
                                     ),
                                     ui.panel_conditional(
                                         "input.hm1_dendogram",
                                         ui.input_checkbox(
                                             "hm1_feat_dendro",
                                             "Feature Cluster",
-                                            value=False
+                                            value=True
                                         ),
                                         ui.input_checkbox(
                                             "hm1_anno_dendro",
                                             "Annotation Cluster",
-                                            value=False
+                                            value=True
                                         ),
                                     ),
                                     ui.div(id="main-hm1_min_num"),
